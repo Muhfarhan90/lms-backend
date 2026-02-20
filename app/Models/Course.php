@@ -67,4 +67,9 @@ class Course extends Model
     {
         return round($this->reviews()->avg('rating') ?? 0, 1);
     }
+
+    public function forum()
+    {
+        return $this->hasMany(Forum::class);
+    }
 }
