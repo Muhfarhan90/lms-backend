@@ -32,6 +32,39 @@ class Course extends Model
 
     public function sections()
     {
-        return $this->hasMany(Section::class);
+        return $this->hasMany(Section::class)->orderBy('sort_order');
+    }
+
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'enrollments');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    public function transactionItems()
+    {
+        return $this->hasMany(TransactionItem::class);
+    }
+
+    /**
+     * Rata-rata rating dari reviews
+     */
+    public function averageRating(): float
+    {
+        return round($this->reviews()->avg('rating') ?? 0, 1);
     }
 }

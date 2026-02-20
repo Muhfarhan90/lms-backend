@@ -24,6 +24,9 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('avatar')->nullable();
             $table->string('school_origin')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('bio')->nullable();
+            $table->date('date_of_birth')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
