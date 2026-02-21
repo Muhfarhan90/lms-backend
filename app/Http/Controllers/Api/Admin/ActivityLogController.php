@@ -13,8 +13,8 @@ class ActivityLogController extends Controller
     public function index(Request $request): JsonResponse
     {
         $logs = ActivityLog::with('user')
-            ->when($request->filled('user_id'), fn ($q) => $q->where('user_id', $request->integer('user_id')))
-            ->when($request->filled('action'), fn ($q) => $q->where('action', $request->input('action')))
+            ->when($request->filled('user_id'), fn($q) => $q->where('user_id', $request->integer('user_id')))
+            ->when($request->filled('action'), fn($q) => $q->where('action', $request->input('action')))
             ->latest()
             ->paginate($request->integer('per_page', 30));
 

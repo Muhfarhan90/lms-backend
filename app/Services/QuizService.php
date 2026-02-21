@@ -120,7 +120,7 @@ class QuizService implements QuizServiceInterface
         // Check if all essays are graded
         $pendingCount = QuizAnswer::where('attempt_id', $attempt->id)
             ->whereNull('graded_at')
-            ->whereHas('question', fn ($q) => $q->where('type', QuestionType::Essay->value))
+            ->whereHas('question', fn($q) => $q->where('type', QuestionType::Essay->value))
             ->count();
 
         $newTotalScore = $attempt->total_score + $additionalScore;

@@ -19,7 +19,7 @@ class CourseResource extends JsonResource
             'is_active'      => $this->is_active,
             'average_rating' => $this->averageRating(),
             'category'       => new CategoryResource($this->whenLoaded('category')),
-            'instructor'     => $this->whenLoaded('instructor', fn () => [
+            'instructor'     => $this->whenLoaded('instructor', fn() => [
                 'id'   => $this->instructor->id,
                 'name' => $this->instructor->name,
             ]),

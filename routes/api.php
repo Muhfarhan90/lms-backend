@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 | Public Routes
 |--------------------------------------------------------------------------
 */
+
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('login',    [AuthController::class, 'login'])->name('login');
     Route::post('register', [AuthController::class, 'register'])->name('register');

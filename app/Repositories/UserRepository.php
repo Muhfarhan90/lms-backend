@@ -19,7 +19,7 @@ class UserRepository implements UserRepositoryInterface
         if (! empty($filters['search'])) {
             $query->where(function ($q) use ($filters) {
                 $q->where('name', 'like', '%' . $filters['search'] . '%')
-                  ->orWhere('email', 'like', '%' . $filters['search'] . '%');
+                    ->orWhere('email', 'like', '%' . $filters['search'] . '%');
             });
         }
 

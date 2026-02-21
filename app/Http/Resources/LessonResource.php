@@ -16,11 +16,11 @@ class LessonResource extends JsonResource
             'type'         => $this->type,
             'content_url'  => $this->content_url,
             'sort_order'   => $this->sort_order,
-            'has_quiz'     => $this->whenLoaded('quiz', fn () => ! is_null($this->quiz), false),
+            'has_quiz'     => $this->whenLoaded('quiz', fn() => ! is_null($this->quiz), false),
             'quiz'         => new QuizResource($this->whenLoaded('quiz')),
             'is_completed' => $this->when(
                 isset($this->pivot) && isset($this->pivot->is_completed),
-                fn () => (bool) $this->pivot?->is_completed
+                fn() => (bool) $this->pivot?->is_completed
             ),
         ];
     }
