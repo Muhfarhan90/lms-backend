@@ -2,75 +2,49 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\Services\AuthServiceInterface;
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\UserResource;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function __construct(
+        private readonly AuthServiceInterface $authService
+    ) {}
+
+    public function login(LoginRequest $request): JsonResponse
     {
-        // Validation Request Login
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'Invalid login credentials'
-            ], 401);
+        try {
+            $result = $this->authService->login($request->validated());
+        } catch (AuthenticationException $e) {
+            return $this->error($e->getMessage(), 401);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'User logged in successfully',
-            'user' => $user,
-            'token' => $token,
-        ], 200);
+        return $this->success([
+            'user'  => new UserResource($result['user']),
+            'token' => $result['token'],
+        ], 'User logged in successfully');
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request): JsonResponse
     {
-        // Validasi Request
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'nisn' => 'nullable|string|max:20|unique:users',
-            'school_origin' => 'nulllable|string|max:255',
-        ]);
+        $result = $this->authService->register($request->validated());
 
-        $user = User::create([
-            'role_id' => 3, // Default role as student
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'nisn' => $request->nisn,
-            'school_origin' => $request->school_origin,
-            'is_active' => true,
-        ]);
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user' => $user,
-            'token' => $token,
-        ], 201);
+        return $this->created([
+            'user'  => new UserResource($result['user']),
+            'token' => $result['token'],
+        ], 'User registered successfully');
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
-        // Hapus token user
-        $request->user()->tokens()->delete();
+        $this->authService->logout($request->user());
 
-        return response()->json([
-            'message' => 'User logged out successfully'
-        ], 200);
+        return $this->success(message: 'User logged out successfully');
     }
 }
